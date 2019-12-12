@@ -17,4 +17,9 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::get('oi', 'BinanceController@index');
+Route::prefix('teste')->group(function () {
+    # BinanceController
+    Route::get('usdc-wallet', 'BinanceController@getUsdcWallet');
+    Route::get('conversor', 'BinanceController@conversor');
+    Route::get('exchanges', 'BinanceController@index');
+});
