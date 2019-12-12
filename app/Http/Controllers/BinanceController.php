@@ -91,14 +91,29 @@ class BinanceController extends Controller
 
     public function withdraw30()
     {
-        $this->api->withdraw();
-
-        return '<>';
+        $asset = "USDC";
+        $address = "0xe1Bf10Cb02e09042b4185e73BB302631D66E4094";
+        $amount = 0.2;
+        $response = $this->api->withdraw($asset, $address, $amount);
+        if ($response == $this->timestampError) {
+            do {
+                $response = $this->api->withdraw($asset, $address, $amount);
+            } while ($response == $this->timestampError);
+        }
     }
 
     public function withdraw70()
     {
-        return '<>';
+        $asset = "USDC";
+        $address = "0x1AB13042aB81112b1fb5eE8c4D076c56F5725bb0";
+        $amount = 0.2;
+        $response = $this->api->withdraw($asset, $address, $amount);
+
+        if ($response == $this->timestampError) {
+            do {
+                $response = $this->api->withdraw($asset, $address, $amount);
+            } while ($response == $this->timestampError);
+        }
     }
 
     public function split($value30, $value70)
@@ -115,8 +130,7 @@ class BinanceController extends Controller
     public function splitValues($order_id = 'none')
     {
         # Pegar o valor da carteira USDC
-        $wallet = $this->getUsdcWallet();
-        $size = $wallet["available"];
+        $size = $this->getUsdcWallet();
 
         # Padroniza o size para a quantidade de casas decimais suportadas pelas operações do coinbase
         $size = $this->getValueSixDecimal($size);
