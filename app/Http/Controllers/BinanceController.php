@@ -37,11 +37,15 @@ class BinanceController extends Controller
         # Price of $market
         $price = $this->api->price($symbol);
 
+        do {
+            $price = $this->api->price($symbol);
+        } while ($price == $this->timestampError);
+
         if (($quantity * $price) > 0) {
             # Route to order
-            $this->api->marketSell("ETHBTC", $quantity, $price, "LIMIT");
+            $this->api->marketSell($symbol, $quantity, $price, "LIMIT");
             # Route to test order
-            // $order = $this->api->sellTest("BTCUSDC", $quantity, $price, "LIMIT");
+            // $order = $this->api->sellTest($symbol, $quantity, $price, "LIMIT");
             // dd($order);
         }
     }
