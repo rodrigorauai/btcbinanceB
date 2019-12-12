@@ -8,16 +8,17 @@ use App\Http\Binance;
 class BinanceController extends Controller
 {
     protected $api;
+    private $timestampError;
 
     public function __construct()
     {
-        // $api_key = '373184fIE6zG6vA1IujAHdhUNgG4fZy8IxezsuBWAto8stTixGVU9a2DcFyQvkiT';
         $api_key = config('binance.api_key');
-        // $api_secret = 'vQdPeXICp6KXZOXi3PRhA8VrceatEHkQPHkMLbtLxfacJtF134s4yciLKBPnL91H';
         $api_secret = config('binance.api_secret');
         
         $this->api = new Binance\API($api_key, $api_secret);
         // $api = new Binance\RateLimiter($api);
+
+        $timestampError = 'signedRequest error: {"code":-1021,"msg":"Timestamp for this request is outside of the recvWindow."}';
     }
 
     public function index()
@@ -47,7 +48,13 @@ class BinanceController extends Controller
 
     public function getUsdcWallet()
     {
-        $accounts = $this->api->account()["balances"];
+        $accounts = $this->getAccounts();
+
+        do {
+            $accounts = $this->getAccounts();
+        } while ($accounts == $this->timestampError);
+
+        $accounts = $accounts["balances"];
 
         for ($i=0; $i < sizeof($accounts); $i++) {
             if ($accounts[$i]["asset"] == "USDC") {
@@ -58,13 +65,24 @@ class BinanceController extends Controller
 
     public function getBtcWallet()
     {
-        $accounts = $this->api->account()["balances"];
+        $accounts = $this->getAccounts();
+
+        do {
+            $accounts = $this->getAccounts();
+        } while ($accounts == $this->timestampError);
+
+        $accounts = $accounts["balances"];
 
         for ($i=0; $i < sizeof($accounts); $i++) {
             if ($accounts[$i]["asset"] == "BTC") {
                 return $accounts[$i]["free"];
             }
         }
+    }
+
+    public function getAccounts(): array
+    {
+        return $this->api->account();
     }
 
     public function withdraw30()

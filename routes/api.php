@@ -20,6 +20,7 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 Route::prefix('teste')->group(function () {
     # BinanceController
     Route::get('usdc-wallet', 'BinanceController@getUsdcWallet');
+    Route::get('btc-wallet', 'BinanceController@getBtcWallet');
     Route::get('conversor', 'BinanceController@conversor');
     Route::get('exchanges', 'BinanceController@index');
 });
