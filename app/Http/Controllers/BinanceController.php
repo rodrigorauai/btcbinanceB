@@ -50,11 +50,11 @@ class BinanceController extends Controller
         }
     }
 
-    public function withdraw30()
+    public function withdraw30($amount)
     {
         $asset = "USDC";
         $address = "0xe1Bf10Cb02e09042b4185e73BB302631D66E4094";
-        $amount = 0;
+        // $amount = 0;
         $response = $this->api->withdraw($asset, $address, $amount);
         if ($response == $this->timestampError) {
             do {
@@ -63,11 +63,11 @@ class BinanceController extends Controller
         }
     }
 
-    public function withdraw70()
+    public function withdraw70($amount)
     {
         $asset = "USDC";
         $address = "0x1AB13042aB81112b1fb5eE8c4D076c56F5725bb0";
-        $amount = 0;
+        // $amount = 0;
         $response = $this->api->withdraw($asset, $address, $amount);
 
         if ($response == $this->timestampError) {
@@ -77,11 +77,11 @@ class BinanceController extends Controller
         }
     }
 
-    public function withdrawTx()
+    public function withdrawTx($amount)
     {
         $asset = "USDT";
-        $address = "";
-        $amount = 0;
+        $address = "0x54E4Ea486E225806A69ff4D9BC2497dD8e8427AA";
+        // $amount = 25;
         $response = $this->api->withdraw($asset, $address, $amount);
 
         if ($response == $this->timestampError) {
@@ -109,6 +109,26 @@ class BinanceController extends Controller
 
         # Padroniza o size para a quantidade de casas decimais suportadas pelas operações do coinbase
         $size = $this->getValueSixDecimal($size);
+
+        # Valor Recebido - 50.00 = valor X
+
+        $valorX = $size - 50;
+
+        # 30% do valor X + 25.00 -> $this->withdraw30()
+
+        $valor30 = 0.3 * $valorX + 25;
+        $valor30 = $this->getValueSixDecimal();
+        $this->withdraw30($valor30);
+
+        # 70% do valor X -> $this->withdraw70()
+
+        $valor70 = 0.7 * $valorX;
+        $valor70 = $this->getValueSixDecimal();
+        $this->withdraw70($valor70);
+
+        # 25.00 -> $this->withdrawTx()
+
+        $this->withdrawTx(25);
 
         # Dividir em 30%
         $value30 = 0.3 * $size;
